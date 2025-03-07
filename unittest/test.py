@@ -4,6 +4,7 @@ def test1():
     n= 3
     n= 5
     """
+
     def func(a):
         n = a
 
@@ -60,8 +61,9 @@ def test4():
     [1, 2, 3, 4]
     [1, 2]
     """
+
     def fun(a):
-        a = a + [3, 4]    # 重新申请内存, 函数外的a不修改
+        a = a + [3, 4]  # 重新申请内存, 函数外的a不修改
         # a += [3, 4]         # 原位修改，函数外的a一起修改
         print(a)
 
@@ -78,7 +80,7 @@ def test5():
     """
     a = ("string",)
     for i in range(2):
-        a = (a, )
+        a = (a,)
         print(a)
 
 
@@ -88,6 +90,7 @@ def test6():
     try无异常时走else, 返回最后的return
     :return:
     """
+
     def estiamte_data_plane(version):
         try:
             if version.lower() == "true":
@@ -137,6 +140,7 @@ def test9():
     3 None
     yield 没有返回值
     """
+
     def func(x):
         x = yield x
         x = yield x
@@ -150,6 +154,7 @@ def test10():
     """
     (0, 1, 2)
     """
+
     def func():
         yield (x for x in range(3))
 
@@ -175,6 +180,7 @@ def test12():
     False
     False
     """
+
     class Foo:
         @classmethod
         def create_one(cls):
@@ -219,8 +225,69 @@ def test12():
         t2.start()
         t2.join()
 
+
 def test13():
     print(not True or 0)  # 0
 
 
-8/14
+def test14():
+    """
+    s1
+    s2
+    run
+    e2
+    e1
+    """
+
+    def decorator1(func):
+        def wrapper():
+            print('s1')
+            func()
+            print("e1")
+
+        return wrapper
+
+    def decorator2(func):
+        def wrapper():
+            print('s2')
+            func()
+            print("e2")
+
+        return wrapper
+
+    @decorator1
+    @decorator2
+    def show():
+        print('run')
+
+    show()
+
+
+def test15():
+    """
+    3
+    """
+    import re
+
+    content = "i think 123 is a lucky num."
+    res = re.match(".*(\d+).*", content)
+    if res:
+        print(res.group(1))
+
+
+def test16():
+    print(f'{{1')
+    print(f'{{{1}')
+
+
+def test17():
+    if True: print(1)
+    if True:
+        print(1)
+
+    # if True:
+    # print(1)
+    if True:
+        print(1)
+
+
