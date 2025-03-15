@@ -23,6 +23,29 @@ def test1():
     f1()
 
 
+def test1_2():
+    """
+    以下程序输出结果是
+    n= 3
+    """
+    n = 1
+    def func(a):
+        n = a
+
+        def func1():
+            global n
+            n = a + 1
+
+        def func2():
+            print('n=', n)
+
+        return func1, func2
+
+    f1, f2 = func(3)
+    f1()
+    f2()
+
+
 def test2():
     """
     [1, 2, 3, 4] []
@@ -177,10 +200,9 @@ def test11():
 
 def test12():
     """
-    False
+    True
     False
     """
-
     class Foo:
         @classmethod
         def create_one(cls):
@@ -193,8 +215,8 @@ def test12():
     class Bar(Foo):
         pass
 
-    bar_one = Bar.create_one
-    bar_two = Bar.create_two
+    bar_one = Bar.create_one()
+    bar_two = Bar.create_two()
     print(isinstance(bar_one, Bar))
     print(isinstance(bar_two, Bar))
 
@@ -291,3 +313,346 @@ def test17():
         print(1)
 
 
+def test16():
+    """
+    [0, 1, 2, 3, 4]
+    []
+    1. 定义__iter__表明类为一个迭代器，只在迭代开始时运行一次
+    2. 循环调用 __next__ 直到遇到 raise StopIteration 为止
+    """
+
+    class Yrange():
+        def __init__(self, n):
+            self.i = 0
+            self.n = n
+
+        def __iter__(self):
+            return self
+
+        def __next__(self):
+            if self.i < self.n:
+                i = self.i
+                self.i += 1
+                return i
+            else:
+                raise StopIteration()
+
+    y = Yrange(5)
+    print(list(y))
+    print(list(y))
+
+
+def test17():
+    """
+    [0, 1, 2, 3, 4]
+    [0, 1, 2, 3, 4]
+    """
+    class Yrange():
+        def __init__(self, n):
+            self.i = 0
+            self.n = n
+
+        def __iter__(self):
+            return self
+
+        def __next__(self):
+            if self.i < self.n:
+                i = self.i
+                self.i += 1
+                return i
+            else:
+                raise StopIteration()
+
+    class Zrange:
+        def __init__(self, n):
+            self.n = n
+        def __iter__(self):
+            return Yrange(self.n)
+
+    z = Zrange(5)
+    print(list(z))
+    print(list(z))
+
+
+def test18():
+    """
+    0.8382096596190508
+    0.07572377720016632
+    0.8363375023320742
+    0.07572377720016632
+    0.8382096596190508
+    """
+    import random
+
+    random.seed('2021')
+    print(random.random())
+
+    for seed, version in (('2021', 1), (2021, 2), (b'2021', 1), (bytearray(b'2021'), 2)):
+        random.seed(seed, version=version)
+        print(random.random())
+
+
+def test19():
+    """
+    False
+    False
+    """
+    import math
+
+    print(math.isfinite(float("inf")))
+    print(math.isinf(float("0")))
+
+
+def test21():
+    """
+    ['End']
+    ['End', 'End']
+    ['1', '2', 'End']
+    ['End', 'End', 'End']
+    """
+
+    class Test(object):
+        def process_data(self, data=[]):
+            data.sort()
+            data.append("End")
+            return data
+
+    t1 = Test()
+    print(t1.process_data())
+    print(t1.process_data())
+    t2 = Test()
+    print(t2.process_data(data=['1', '2']))
+    print(t2.process_data())
+
+
+def test22():
+    """
+    TypeError: f() missing 1 required positional argument: 'self'
+    """
+
+    class A:
+        def f(self):
+            print(1)
+
+        @staticmethod
+        def f(self):
+            print(2)
+
+    a = A()
+    print(a.f())
+
+
+def test23():
+    print((2) << 2)  # 8: 0b0010 -> 0b1000
+    # 1 + 2j << 2  TypeError: unsupported operand type(s) for <<: 'complex' and 'int'
+    # [2] << 2  TypeError: unsupported operand type(s) for <<: 'list' and 'int'
+    # 2.0 << 2  TypeError: unsupported operand type(s) for <<: 'float' and 'int'
+
+
+def test24():
+    """4"""
+
+    class Person:
+        __slots__ = ('name', 'age')
+
+    class Student(Person):
+        pass
+
+    stu = Student()
+    stu.name = "Mike"
+    stu.age = 10
+    stu.grade = 4
+    print(stu.grade)
+
+
+def test25():
+    """[5, 4, 1, 2, 3]"""
+    from collections import deque
+
+    dq = deque([1])
+    dq.extend([2, 3])
+    dq.extendleft([4, 5])
+    print(list(dq))
+
+
+def test26():
+    """
+    (A), A(), A print(0)
+    A{} raise
+    """
+    class A:
+        x = 0
+
+    for a in ((A), A(), A):
+        print(a.x)
+
+    # a = A{}
+    # print(a.x)
+
+
+def test27():
+    """
+    {{表示转义{
+    {40}
+    {4*10}
+    40
+    4*10
+    """
+    print(f"{{{4*10}}}")
+    print(f"{{4*10}}")
+    print(f"{4 * 10}")
+    print(f"4*10")
+
+
+def test28():
+    """
+    返回列表的地址，没有改变
+    True
+    [['def'], ['abc']]
+    """
+    def foo(x):
+        x[0] = ['def']
+        x[1] = ['abc']
+        return id(x)
+
+    q = ['abc', 'def']
+    print(id(q) == foo(q))
+    print(q)
+
+
+def test29():
+    """
+    False
+    True
+    """
+    class Foo:
+        def __init__(self, name):
+            self._name = name
+
+        def __str__(self):
+            return self._name
+
+        def __eq__(self, other):
+            return self is other
+
+    class Bar:
+        def __init__(self, name):
+            self._name = name
+
+        def __str__(self):
+            return self._name
+
+        def __eq__(self, other):
+            return str(self) == str(other)
+
+    foo = Foo("Hello")
+    bar = Bar("Hello")
+    print(foo == bar)
+    print(bar == foo)
+
+
+def test30():
+    import importlib
+    # importlib.import_module("a.a")  # wrong
+    # a = importlib.import_module("a")  # wrong
+    # from a import a  # ok
+    a = importlib.import_module("a.a")  # ok
+    a.func
+
+
+def test31():
+    # IndentationError: unexpected indent
+    # s = 'a' + 'b'
+    #     + 'c' + 'd'
+    #     + 'e' + 'f'
+    s = 'a' + 'b' \
+        + 'c' + 'd' \
+        + 'e' + 'f'
+    s = ('a' + 'b'
+        + 'c' + 'd'
+        + 'e' + 'f')
+    s = 'a' + 'b' \
+        + 'c' + 'd' \
+        + 'e' + 'f' \
+
+    1
+
+
+def test32():
+    """
+    # from a import func    # 循环引用
+    # from a.a import *     # ok
+    #                       # 报错
+    # from .a import *        # ok
+    """
+    from a import func
+    func()
+
+
+def test33():
+    """
+    It is not the same thread.
+    It is not the same thread.
+    """
+    import threading
+    import asyncio
+
+    async def hello(thread_id):
+        current_thread = threading.current_thread()
+        if thread_id == current_thread:
+            print('It is not the same thread.')
+
+    async def main():
+        main_thread = threading.current_thread()
+        hello1 = asyncio.create_task(hello(main_thread))
+        await hello(main_thread)
+        await hello1
+
+    asyncio.run(main())
+
+
+def test34():
+    """
+    3
+    2
+    1
+    """
+    import unittest
+    import math
+    from unittest import mock
+
+    class TestSample(unittest.TestCase):
+        @mock.patch.object(math, 'sqrt')
+        @mock.patch.object(math, 'ceil')
+        @mock.patch.object(math, 'degrees')
+        def test_math(self, test_mock_1, test_mock_2, test_mock_3):
+            test_mock_1.return_value = 1
+            test_mock_2.return_value = 2
+            test_mock_3.return_value = 3
+            print(math.sqrt(1))
+            print(math.ceil(1))
+            print(math.degrees(1))
+
+
+    unittest.main()
+
+
+def test35():
+    """2"""
+    y = 1
+    f = lambda x: x+ y+ 1
+    y = 0
+    print(f(1))
+
+
+def test36():
+    """
+    True
+    False
+    """
+    import collections
+
+    a = range(10)
+    # a = (x for x in range(10))
+    print(isinstance(a, collections.Iterable))
+    print(isinstance(a, collections.Iterator))
